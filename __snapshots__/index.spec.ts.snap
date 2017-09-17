@@ -1,0 +1,44 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Creates action creator invokation for given functions or function map 1`] = `
+Object {
+  "actionCreator": "ac1",
+  "args": Array [
+    "arg1",
+    true,
+  ],
+}
+`;
+
+exports[`Creates action creator invokation for given functions or function map 2`] = `
+Object {
+  "actionCreator": "ac2",
+  "args": Array [
+    "arg2",
+    false,
+  ],
+}
+`;
+
+exports[`Creates action creator invokation for given functions or function map 3`] = `
+Object {
+  "actionCreator": "a",
+  "args": Array [
+    Object {
+      "a": "hello",
+    },
+  ],
+}
+`;
+
+exports[`Creates action creator invokation for given functions or function map 4`] = `
+Object {
+  "actionCreator": "b",
+  "args": Array [
+    Object {
+      "a": "world",
+      "world": true,
+    },
+  ],
+}
+`;

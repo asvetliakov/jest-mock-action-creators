@@ -1,0 +1,65 @@
+{
+  "name": "jest-mock-action-creators",
+  "version": "1.0.0",
+  "description": "Easy mock & test redux action creators with dispatch() in your components",
+  "main": "index.js",
+  "dependencies": {
+    "babel-core": "^6.26.0",
+    "babel-plugin-syntax-jsx": "^6.18.0",
+    "babel-types": "^6.26.0",
+    "jest-diff": ">= 21.0.0"
+  },
+  "devDependencies": {
+    "@types/babel-core": "^6.25.2",
+    "@types/babel-types": "^6.25.1",
+    "@types/jest": "^20.0.8",
+    "@types/node": "^8.0.28",
+    "del-cli": "^1.1.0",
+    "jest": "^21.1.0",
+    "ts-jest": "^21.0.1",
+    "typescript": "^2.5.2"
+  },
+  "peerDependencies": {
+    "jest": ">= 21.0.0"
+  },
+  "scripts": {
+    "test": "jest",
+    "clean": "del-cli *.js *.map *.d.ts",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/asvetliakov/jest-mock-action-creators.git"
+  },
+  "keywords": [
+    "jest",
+    "mock",
+    "redux",
+    "dispatch"
+  ],
+  "author": "Alexey Svetliakov <asvetliakov@teledini.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/asvetliakov/jest-mock-action-creators/issues"
+  },
+  "homepage": "https://github.com/asvetliakov/jest-mock-action-creators#readme",
+  "jest": {
+    "globals": {
+      "ts-jest": {
+        "skipBabel": true
+      }
+    },
+    "testEnvironment": "node",
+    "resetMocks": true,
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "transform": {
+      "\\.(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+    },
+    "moduleFileExtensions": [
+      "json",
+      "js",
+      "ts"
+    ],
+    "mapCoverage": true
+  }
+}

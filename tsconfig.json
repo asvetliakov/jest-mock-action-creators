@@ -1,0 +1,32 @@
+{
+    "compilerOptions": {
+        "strict": true,
+        "strictNullChecks": true,
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "target": "es2015",
+        "lib": [
+            "es2015",
+            "es2016.array.include"
+        ],
+        "sourceMap": true,
+        "declaration": true,
+        "typeRoots": [
+            "types",
+            "node_modules/@types"
+        ],
+        "types": [
+            "jest",
+            "node"
+        ],
+        "baseUrl": ".",
+        "paths": {
+            "*": [
+                "types/*"
+            ]
+        }
+    },
+    "exclude": [
+        "*.spec.*"
+    ]
+}

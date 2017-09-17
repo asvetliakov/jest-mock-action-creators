@@ -1,0 +1,5 @@
+{
+    "tslint.alwaysShowRuleFailuresAsWarnings": true,
+    "runCurrentTest.run": "npm run test -- ${relativeTestPath} --testNamePattern \"${fullTestName}\"",
+    "runCurrentTest.runAndUpdateSnapshots": "npm run test -- -u ${relativeTestPath} --testNamePattern \"${fullTestName}\""
+}
