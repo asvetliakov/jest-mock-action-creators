@@ -16,6 +16,7 @@
     "@types/node": "^8.0.28",
     "del-cli": "^1.1.0",
     "jest": "^21.1.0",
+    "npm-run-all": "^4.1.1",
     "ts-jest": "^21.0.1",
     "typescript": "^2.5.2"
   },
@@ -25,7 +26,8 @@
   "scripts": {
     "test": "jest",
     "clean": "del-cli *.js *.map *.d.ts",
-    "build": "tsc"
+    "build": "tsc",
+    "prepublish": "run-s clean build"
   },
   "repository": {
     "type": "git",

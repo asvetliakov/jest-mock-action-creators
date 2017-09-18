@@ -36,7 +36,6 @@ it("Creates dispatch implementation for mocked creators", () => {
     mockActionCreators(ac1, ac2, actions);
 
     const dispatch = jest.fn();
-    console.warn(dispatch);
 
     createDispatchMockImplementation(dispatch, {
         [ac1.name]: 10,
