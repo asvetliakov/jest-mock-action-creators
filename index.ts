@@ -101,17 +101,19 @@ expect.extend({
 
         const creatorName = typeof actionCreatorName === "function" ? actionCreatorName.name : actionCreatorName;
 
-        const call = received.mock.calls.find((val: any[]) => {
-            return val && val[0] && val[0].actionCreator === creatorName
-        });
-        const invokation: ActionCreatorInvokation | undefined = call ? call[0] : undefined;
+        const calls: ActionCreatorInvokation[] = received.mock.calls
+            .filter((val: any) => val && val[0] && val[0].actionCreator === creatorName)
+            .map(v => v[0]);
+
+        const lastInvokation: ActionCreatorInvokation | undefined = calls.slice(-1)[0];
+        const allInvokationArguments = calls.map(c => c.args).filter(a => !!a) as any[];
 
         let pass = true;
-        if (!invokation) {
+        if (calls.length === 0) {
             pass = false;
         } else if (args.length > 0) {
             try {
-                expect(args).toEqual(invokation.args);
+                expect(allInvokationArguments).toContainEqual(args);
             } catch {
                 pass = false;
             }
@@ -126,16 +128,16 @@ expect.extend({
         }
 
         const formatReceived = (): string => {
-            if (!pass && !invokation) {
+            if (!pass && calls.length === 0) {
                 return `${(this.utils.RECEIVED_COLOR as any)("But it never called it.")}`;
             }
-            if (!pass && invokation) {
-                if (invokation.args && invokation.args.length > 0) {
-                    let msg =  `${(this.utils.RECEIVED_COLOR as any)("But it called it with arguments: " + this.utils.stringify(invokation.args))}`;
+            if (!pass && calls.length > 0) {
+                if (allInvokationArguments.length > 0) {
+                    let msg =  `${(this.utils.RECEIVED_COLOR as any)(`But it called it ${calls.length} times with arguments: ` + this.utils.stringify(allInvokationArguments))}`;
                     if (args.length > 0) {
-                        const diffStr = diff(args, invokation.args, { expand: (this as any).expand });
+                        const diffStr = diff(args, allInvokationArguments.slice(-1)[0], { expand: (this as any).expand });
                         if (diffStr) {
-                            msg += `\n\nDifference\n\n${diffStr}`;
+                            msg += `\n\nLast call difference\n\n${diffStr}`;
                         }
                     }
                     return msg;

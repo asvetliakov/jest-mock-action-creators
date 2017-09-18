@@ -10,6 +10,8 @@ describe("mockActionCreators()", () => {
             a: jest.fn(),
             b: jest.fn()
         };
+        Object.defineProperty(actions.a, "name", { value: "a" });
+        Object.defineProperty(actions.b, "name", { value: "b" });
 
         mockActionCreators(ac1, ac2, actions);
 
@@ -107,12 +109,19 @@ describe("toBeCalledWithActionCreator", () => {
         });
 
         it("Checks for name with arguments", () => {
+            dis(ac1("a", "k", true));
             expect(dis).toBeCalledWithActionCreator(ac1, "a", "b", true);
             expect(() => expect(dis).toBeCalledWithActionCreator(ac1, "e", "k", false)).toThrowErrorMatchingSnapshot();
             expect(dis).not.toBeCalledWithActionCreator(ac1, "e", "k");
 
             expect(dis).not.toBeCalledWithActionCreator(ac2, "a", "b", true);
             expect(() => expect(dis).toBeCalledWithActionCreator(ac2, "a", "b", true)).toThrowErrorMatchingSnapshot();
+        });
+
+        it("Works for same action creator but different arguments", () => {
+            dis(ac1("e", "f", false));
+            expect(dis).toBeCalledWithActionCreator(ac1, "a", "b", true);
+            expect(dis).toBeCalledWithActionCreator(ac1, "e", "f", false);
         });
     });
 });

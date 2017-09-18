@@ -48,7 +48,7 @@ exports[`toBeCalledWithActionCreator Checks invokations Checks for just name wit
 
 Expected dispatch() [32m\\"to not call\\"[39m action creator [32m\\"ac1\\"[39m
 
-  [31mBut it was called it[39m"
+  [31mBut it called it[39m"
 `;
 
 exports[`toBeCalledWithActionCreator Checks invokations Checks for just name without arguments 2`] = `
@@ -65,19 +65,18 @@ exports[`toBeCalledWithActionCreator Checks invokations Checks for name with arg
 Expected dispatch() [32m\\"to call\\"[39m action creator [32m\\"ac1\\"[39m
   With arguments: [32m[\\"e\\", \\"k\\", false][39m
 
-  [31mBut it was called it with arguments: [\\"a\\", \\"b\\", true][39m
+  [31mBut it called it 2 times with arguments: [[\\"a\\", \\"b\\", true], [\\"a\\", \\"k\\", true]][39m
 
-Difference
+Last call difference
 
 [32m- Expected[39m
 [31m+ Received[39m
 
 [2m  Array [[22m
 [32m-   \\"e\\",[39m
-[32m-   \\"k\\",[39m
-[32m-   false,[39m
 [31m+   \\"a\\",[39m
-[31m+   \\"b\\",[39m
+[2m    \\"k\\",[22m
+[32m-   false,[39m
 [31m+   true,[39m
 [2m  ][22m"
 `;
