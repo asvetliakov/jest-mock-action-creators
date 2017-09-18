@@ -70,25 +70,37 @@ function isMockActionCreatorsCallExpression(node: t.CallExpression, funcName: st
     return false;
 }
 
-/**
- * Plugin itself
- */
-export default function plugin({ types: t }: typeof b): b.PluginObj {
-    // Mock action creators function name. It can be renamed during imports, for example
-    // import { mockActionCreators as m } from "jest-mock-action-creators";
-    let mockActionCreatorsName = "mockActionCreators";
-    // All import identifiers with local value => source name
-    const importIdentifiers = new Map<string, string>();
-    // Existing jest mocks
-    const existingJestMocks: string[] = [];
-    // Program to store
-    let program: bt.NodePath<t.Program>;
+export interface PluginState {
+    /**
+     * Mock action creators function name. It can be renamed during imports, for example
+     */
+    mockActionCreatorsName: string;
+    /**
+     * All import identifiers with local value => source name
+     */
+    importIdentifiers: Map<string, string>;
+    /**
+     * Existing jest mocks or already mocked action creators
+     */
+    existingJestMocks: string[];
+    /**
+     * Top-level program instance
+     */
+    program: bt.NodePath<t.Program>;
+}
+
+export default function plugin({ types: t }: typeof b): b.PluginObj<PluginState> {
     return {
+        pre() {
+            this.mockActionCreatorsName = "mockActionCreators";
+            this.importIdentifiers = new Map();
+            this.existingJestMocks = [];
+        },
         inherits: require("babel-plugin-syntax-jsx"),
         visitor: {
             Program(path) {
                 // store program since to avoid parent lookup later
-                program = path;
+                this.program = path;
             },
             ImportDeclaration(path) {
                 // process import declarations, pretty easy here
@@ -96,11 +108,11 @@ export default function plugin({ types: t }: typeof b): b.PluginObj {
                 for (const s of specifiers) {
                     if (t.isImportSpecifier(s)) {
                         // We may rename our function here
-                        if (s.imported.name === mockActionCreatorsName && s.local.name !== s.imported.name) {
-                            mockActionCreatorsName = s.local.name;
+                        if (s.imported.name === this.mockActionCreatorsName && s.local.name !== s.imported.name) {
+                            this.mockActionCreatorsName = s.local.name;
                         }
                     }
-                    importIdentifiers.set(s.local.name, path.node.source.value);
+                    this.importIdentifiers.set(s.local.name, path.node.source.value);
                 }
             },
             CallExpression(path) {
@@ -122,13 +134,13 @@ export default function plugin({ types: t }: typeof b): b.PluginObj {
                     const variableId = parentNode.id;
 
                     if (t.isIdentifier(variableId)) {
-                        importIdentifiers.set(variableId.name, sourceName);
+                        this.importIdentifiers.set(variableId.name, sourceName);
                     } else if (t.isObjectPattern(variableId)) {
                         const props = variableId.properties;
                         // const { a, b, c, d } = require("a");
                         for (const prop of props) {
                             if (t.isProperty(prop) && t.isIdentifier(prop.value)) {
-                                importIdentifiers.set(prop.value.name, sourceName);
+                                this.importIdentifiers.set(prop.value.name, sourceName);
                             }
                         }
                     }
@@ -139,8 +151,8 @@ export default function plugin({ types: t }: typeof b): b.PluginObj {
                     if (!firstArg || !t.isStringLiteral(firstArg)) {
                         return;
                     }
-                    existingJestMocks.push(firstArg.value);
-                } else if (isMockActionCreatorsCallExpression(node, mockActionCreatorsName)) {
+                    this.existingJestMocks.push(firstArg.value);
+                } else if (isMockActionCreatorsCallExpression(node, this.mockActionCreatorsName)) {
                     // Process actually our function
                     const mockIdentifiers: string[] = [];
                     for (const arg of node.arguments) {
@@ -156,9 +168,9 @@ export default function plugin({ types: t }: typeof b): b.PluginObj {
                         if (!name) {
                             continue;
                         }
-                        const importSourceForIdentifier = importIdentifiers.get(name);
+                        const importSourceForIdentifier = this.importIdentifiers.get(name);
                         // skip identifiers which don't have import or if import for this identifier was already mocked
-                        if (!importSourceForIdentifier || existingJestMocks.indexOf(importSourceForIdentifier) !== -1) {
+                        if (!importSourceForIdentifier || this.existingJestMocks.indexOf(importSourceForIdentifier) !== -1) {
                             continue;
                         }
                         // filter same identifiers
@@ -168,20 +180,20 @@ export default function plugin({ types: t }: typeof b): b.PluginObj {
                     }
                     if (mockIdentifiers.length > 0) {
                         // get all sources for identifiers, exclude duplicates
-                        const allSourcesToMock = [...importIdentifiers]
+                        const allSourcesToMock = [...this.importIdentifiers]
                             .filter(([identifier, ]) => mockIdentifiers.includes(identifier))
                             .map(([, source]) => source)
                             .filter((s, idx, arr) => !arr.includes(s, idx + 1))
 
-                        if (program) {
+                        if (this.program) {
                             // create mock records
                             allSourcesToMock.forEach(source =>
-                                program.node.body.unshift(buildJestMock(source))
+                                this.program.node.body.unshift(buildJestMock(source))
                                 // docs are saying to use unshiftContainer but it's undefined??
                                 // (program.get("body") as any).unshiftContainer("body", buildJestMock(source)))
                             );
                             // store new mocks
-                            existingJestMocks.push(...allSourcesToMock);
+                            this.existingJestMocks.push(...allSourcesToMock);
                         }
                     }
                 }
