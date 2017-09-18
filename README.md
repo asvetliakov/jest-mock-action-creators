@@ -193,36 +193,24 @@ expect(dispatch).toBeCalledWithActionCreator(anotherAction, "test2");
 
 ```npm install jest-mock-action-creators --save-dev```
 
-Add ```jest-mock-action-creators/babel``` to your plugins in .babelrc
+Add ```./node_modules/jest-mock-action-creators/babel``` to your plugins in .babelrc
 
-When using typescript and ```ts-jest```, enable babel processing in ```ts-jest``` (enabled by default) and add it to plugin list in jest config:
+When using typescript and ```ts-jest```, enable babel processing in ```ts-jest``` (enabled by default) and tell it to use .babelrc:
 
 ```json
 {
   "jest": {
     "globals": {
       "ts-jest": {
-        "babelConfig": {
-          "plugins": ["jest-mock-action-creators/babel"]
-        }
+        "useBabelrc": true
       }
     }
   }
 }
 ```
 
-Import ```jest-mock-action-creators/expect``` in your setup test file or in test itself
+*Note*: Specifying ```plugins: []``` in ts-jest babel configuration won't work
 
-helpers/test-setup.js
-```js
-require("jest-mock-action-creators/expect");
-```
-
-```json
-"jest": {
-    "setupTestFrameworkScriptFile": "<rootDir>/helpers/test-setup.js",
-}
-```
 
 and finally import in your test:
 
