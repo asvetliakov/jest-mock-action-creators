@@ -99,11 +99,11 @@ export default function plugin({ types: t }: typeof b): b.PluginObj<PluginState>
         inherits: require("babel-plugin-syntax-jsx"),
         visitor: {
             Program(path) {
-                // store program since to avoid parent lookup later
+                // store program to avoid parent lookup later
                 this.program = path;
             },
             ImportDeclaration(path) {
-                // process import declarations, pretty easy here
+                // process import declarations, easiest
                 const specifiers = path.node.specifiers;
                 for (const s of specifiers) {
                     if (t.isImportSpecifier(s)) {
@@ -170,7 +170,7 @@ export default function plugin({ types: t }: typeof b): b.PluginObj<PluginState>
                         }
                         const importSourceForIdentifier = this.importIdentifiers.get(name);
                         // skip identifiers which don't have import or if import for this identifier was already mocked
-                        if (!importSourceForIdentifier || this.existingJestMocks.indexOf(importSourceForIdentifier) !== -1) {
+                        if (!importSourceForIdentifier || this.existingJestMocks.includes(importSourceForIdentifier)) {
                             continue;
                         }
                         // filter same identifiers
