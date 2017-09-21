@@ -1,2 +1,2 @@
-const babel = require("dist/babel");
+const babel = require("./dist/babel");
 module.exports = babel;

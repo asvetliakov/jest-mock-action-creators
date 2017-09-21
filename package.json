@@ -1,6 +1,6 @@
 {
   "name": "jest-mock-action-creators",
-  "version": "1.0.3",
+  "version": "1.0.5",
   "description": "Easy mock & test redux action creators with dispatch() in your components",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
