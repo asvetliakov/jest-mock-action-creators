@@ -4,6 +4,7 @@
         "strictNullChecks": true,
         "module": "commonjs",
         "moduleResolution": "node",
+        "outDir": "./dist",
         "target": "es2015",
         "lib": [
             "es2015",
@@ -27,6 +28,6 @@
         }
     },
     "exclude": [
-        "*.spec.*"
+        "src/**/*.spec.*"
     ]
 }
