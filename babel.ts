@@ -188,9 +188,7 @@ export default function plugin({ types: t }: typeof b): b.PluginObj<PluginState>
                         if (this.program) {
                             // create mock records
                             allSourcesToMock.forEach(source =>
-                                this.program.node.body.unshift(buildJestMock(source))
-                                // docs are saying to use unshiftContainer but it's undefined??
-                                // (program.get("body") as any).unshiftContainer("body", buildJestMock(source)))
+                                (this.program as any).unshiftContainer("body", buildJestMock(source))
                             );
                             // store new mocks
                             this.existingJestMocks.push(...allSourcesToMock);
