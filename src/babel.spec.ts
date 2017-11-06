@@ -1,4 +1,4 @@
-import { transform } from "babel-core";
+import { transform } from "@babel/core";
 import plugin from "./babel";
 
 it("Doesn't do anything without mock call", () => {

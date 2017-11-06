@@ -1,74 +1,11 @@
-import * as b from "babel-core";
-import * as t from "babel-types";
-import * as bt from "babel-traverse";
+import * as b from "@babel/core";
+import * as t from "@babel/types";
+import * as bt from "@babel/traverse";
 
 const globalJestIdentifier = "jest";
 const jestMockCallExpressions = ["mock", "doMock"];
 const requireIdentifier = "require";
 
-/**
- * Check if given call expression is jest mocking call
- * 
- * @param node Node to check
- * @returns True if node is jest mock call expression
- */
-function isJestMockCallExpression(node: t.CallExpression): boolean {
-    if (!t.isMemberExpression(node.callee)) {
-        return false;
-    }
-    const { object, property } = node.callee;
-    if (!t.isIdentifier(object) || !t.isIdentifier(property)) {
-        return false;
-    }
-    if (object.name !== globalJestIdentifier || !jestMockCallExpressions.includes(property.name)) {
-        return false;
-    }
-    return true;
-}
-
-/**
- * Check if given call expression is node's require() call
- *
- * @param node Node to check
- * @returns True if node is node's require() call
- */
-function isRequireCallExpression(node: t.CallExpression): boolean {
-    if (!t.isIdentifier(node.callee)) {
-        return false;
-    }
-    return node.callee.name === requireIdentifier;
-}
-
-/**
- * Build jest.mock() expression
- *
- * @param source Source name to embed into jest.mock()
- * @returns New jest.mock() expression
- */
-function buildJestMock(source: string): t.ExpressionStatement {
-    return t.expressionStatement(t.callExpression(t.memberExpression(t.identifier(globalJestIdentifier), t.identifier("mock")), [t.stringLiteral(source)]));
-}
-
-/**
- * Check if given expression is plugin's mockActionCreators extension or similar
- * 
- * @param node Node to check
- * @param funcName Callee name to check
- *
- * @returns True if it's mockActionCreators() like call
- */
-function isMockActionCreatorsCallExpression(node: t.CallExpression, funcName: string): boolean {
-    if (t.isIdentifier(node.callee)) {
-        // mockActionCreators()
-        return node.callee.name === funcName;
-    } else if (t.isMemberExpression(node.callee) && t.isIdentifier(node.callee.property)) {
-        // possiblity:
-        // import * as m from "jest-mock-action-creators";
-        // m.mockActionCreators();
-        return node.callee.property.name === funcName;
-    }
-    return false;
-}
 
 export interface PluginState {
     /**
@@ -90,13 +27,76 @@ export interface PluginState {
 }
 
 export default function plugin({ types: t }: typeof b): b.PluginObj<PluginState> {
+    /**
+     * Check if given call expression is jest mocking call
+     *
+     * @param node Node to check
+     * @returns True if node is jest mock call expression
+     */
+    const isJestMockCallExpression = (node: t.CallExpression): boolean => {
+        if (!t.isMemberExpression(node.callee)) {
+            return false;
+        }
+        const { object, property } = node.callee;
+        if (!t.isIdentifier(object) || !t.isIdentifier(property)) {
+            return false;
+        }
+        if (object.name !== globalJestIdentifier || !jestMockCallExpressions.includes(property.name)) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Check if given call expression is node's require() call
+     *
+     * @param node Node to check
+     * @returns True if node is node's require() call
+     */
+    const isRequireCallExpression = (node: t.CallExpression): boolean => {
+        if (!t.isIdentifier(node.callee)) {
+            return false;
+        }
+        return node.callee.name === requireIdentifier;
+    }
+
+    /**
+     * Build jest.mock() expression
+     *
+     * @param source Source name to embed into jest.mock()
+     * @returns New jest.mock() expression
+     */
+    const buildJestMock = (source: string): t.ExpressionStatement => {
+        return t.expressionStatement(t.callExpression(t.memberExpression(t.identifier(globalJestIdentifier), t.identifier("mock")), [t.stringLiteral(source)]));
+    }
+
+    /**
+     * Check if given expression is plugin's mockActionCreators extension or similar
+     *
+     * @param node Node to check
+     * @param funcName Callee name to check
+     *
+     * @returns True if it's mockActionCreators() like call
+     */
+    const isMockActionCreatorsCallExpression = (node: t.CallExpression, funcName: string): boolean => {
+        if (t.isIdentifier(node.callee)) {
+            // mockActionCreators()
+            return node.callee.name === funcName;
+        } else if (t.isMemberExpression(node.callee) && t.isIdentifier(node.callee.property)) {
+            // possiblity:
+            // import * as m from "jest-mock-action-creators";
+            // m.mockActionCreators();
+            return node.callee.property.name === funcName;
+        }
+        return false;
+    }
+
     return {
         pre() {
             this.mockActionCreatorsName = "mockActionCreators";
             this.importIdentifiers = new Map();
             this.existingJestMocks = [];
         },
-        inherits: require("babel-plugin-syntax-jsx"),
         visitor: {
             Program(path) {
                 // store program to avoid parent lookup later

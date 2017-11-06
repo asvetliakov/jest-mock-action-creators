@@ -22,12 +22,26 @@
         ],
         "baseUrl": ".",
         "paths": {
+            "@babel/core": [
+                "node_modules/@types/babel-core"
+            ],
+            "@babel/types": [
+                "node_modules/@types/babel-types"
+            ],
+            "@babel/traverse": [
+                "node_modules/@types/babel-traverse"
+            ],
             "*": [
                 "types/*"
             ]
-        }
+        },
+        "plugins": [
+            {
+                "name": "typescript-snapshots-plugin"
+            }
+        ]
     },
-    "exclude": [
-        "src/**/*.spec.*"
+    "include": [
+        "src/**/*"
     ]
 }

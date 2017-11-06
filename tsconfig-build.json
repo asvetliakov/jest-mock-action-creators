@@ -1,0 +1,7 @@
+{
+    "extends": "./tsconfig",
+    "files": [
+        "src/babel.ts",
+        "src/index.ts"
+    ]
+}
