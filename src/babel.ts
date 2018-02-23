@@ -2,9 +2,26 @@ import * as b from "@babel/core";
 import * as t from "@babel/types";
 import * as bt from "@babel/traverse";
 
-const globalJestIdentifier = "jest";
-const jestMockCallExpressions = ["mock", "doMock"];
-const requireIdentifier = "require";
+export interface PluginOptions {
+    /**
+     * Global jest identifier
+     */
+    jestIdentifier: string;
+    /**
+     * Require identifier
+     */
+    requireIdentifier: string;
+    /**
+     * List of call expressions to ignore them for auto-mocking
+     */
+    mockIgnoreExpressions: string[];
+}
+
+const defaultConfig: PluginOptions = {
+    jestIdentifier: "jest",
+    requireIdentifier: "require",
+    mockIgnoreExpressions: ["mock", "doMock"],
+};
 
 
 export interface PluginState {
@@ -26,7 +43,11 @@ export interface PluginState {
     program: bt.NodePath<t.Program>;
 }
 
-export default function plugin({ types: t }: typeof b): b.PluginObj<PluginState> {
+export default function plugin({ types: t }: typeof b, options?: PluginOptions): b.PluginObj<PluginState> {
+    const finalOptions = {
+        ...defaultConfig,
+        ...options,
+    };
     /**
      * Check if given call expression is jest mocking call
      *
@@ -41,7 +62,7 @@ export default function plugin({ types: t }: typeof b): b.PluginObj<PluginState>
         if (!t.isIdentifier(object) || !t.isIdentifier(property)) {
             return false;
         }
-        if (object.name !== globalJestIdentifier || !jestMockCallExpressions.includes(property.name)) {
+        if (object.name !== finalOptions.jestIdentifier || !finalOptions.mockIgnoreExpressions.includes(property.name)) {
             return false;
         }
         return true;
@@ -57,7 +78,7 @@ export default function plugin({ types: t }: typeof b): b.PluginObj<PluginState>
         if (!t.isIdentifier(node.callee)) {
             return false;
         }
-        return node.callee.name === requireIdentifier;
+        return node.callee.name === finalOptions.requireIdentifier;
     }
 
     /**
@@ -67,7 +88,7 @@ export default function plugin({ types: t }: typeof b): b.PluginObj<PluginState>
      * @returns New jest.mock() expression
      */
     const buildJestMock = (source: string): t.ExpressionStatement => {
-        return t.expressionStatement(t.callExpression(t.memberExpression(t.identifier(globalJestIdentifier), t.identifier("mock")), [t.stringLiteral(source)]));
+        return t.expressionStatement(t.callExpression(t.memberExpression(t.identifier(finalOptions.jestIdentifier), t.identifier("mock")), [t.stringLiteral(source)]));
     }
 
     /**

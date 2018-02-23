@@ -1,4 +1,4 @@
-import diff = require("jest-diff");
+import diff from "jest-diff";
 
 export interface ActionCreatorInvokation {
     /**
@@ -12,10 +12,8 @@ export interface ActionCreatorInvokation {
 }
 
 /**
- * Mock given action creators to use them with expect(dispatch).tobeCalledWithActionCreator()
- * 
- * @export
- * @param actionCreators 
+ * Auto-Mock given action creators to use them with expect(dispatch).tobeCalledWithActionCreator()
+ * @param actionCreators
  */
 export function mockActionCreators(...actionCreators: Array<Function | { [key: string]: Function }>): void {
     const createNewImplementation = (name: string) => (...args: any[]) => {
@@ -40,9 +38,13 @@ export function mockActionCreators(...actionCreators: Array<Function | { [key: s
 }
 
 /**
+ * Replace mocked action creators to use them with expect(dispatch).toBeCalledWithActionCreator()
+ * Doesn't automock them (if using babel plugin) so they should be mocked before
+ */
+export const replaceActionCreators = mockActionCreators;
+
+/**
  * Create dispatch implementation with given expectations
- * 
- * @export
  * @param dispatch Mocked dispatch function
  * @param expectations Expectations object. Key is the action creator function name, value is the result
  */

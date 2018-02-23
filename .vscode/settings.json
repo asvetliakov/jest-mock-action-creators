@@ -1,5 +1,6 @@
 {
     "tslint.alwaysShowRuleFailuresAsWarnings": true,
     "runCurrentTest.run": "npm run test -- ${relativeTestPath} --runTestsByPath --testNamePattern \"${fullTestName}\"",
-    "runCurrentTest.runAndUpdateSnapshots": "npm run test -- -u ${relativeTestPath} --runTestsByPath --testNamePattern \"${fullTestName}\""
+    "runCurrentTest.runAndUpdateSnapshots": "npm run test -- -u ${relativeTestPath} --runTestsByPath --testNamePattern \"${fullTestName}\"",
+    "typescript.tsdk": "node_modules/typescript/lib"
 }

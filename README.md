@@ -1,6 +1,6 @@
 # Mock redux action creators with jest
 
-## For what do you need it?
+## Why
 
 You're cool. You're going to test your React smart components (aka containers in redux) and make assumptions what they call necessary redux action creators. Well, you can have few ways to achieve this:
 
@@ -170,12 +170,13 @@ import { anotherAction } from "../anotherAction";
 
 // Automatically mock your action creator modules. When using babel transformer it will insert jest.mock() for their module paths
 mockActionCreators(myAction, anotherAction);
+// or replaceActionCreators(myAction, anotherAction); // Doesn't insert jest.mock() for their module paths, expects myAction and anotherAction be already mocked (i.e. jest.fn())
 
 const dispatch = jest.fn();
 const wrapper = shallow(<C dispatch={dispatch} />);
 wrapper.find("button").simulate("click");
 
-// Pretty easy, isn't it? 
+// Pretty easy, isn't it?
 expect(dispatch).toBeCalledWithActionCreator(anotherAction, "test");
 expect(dispatch).not.toBeCalledWithActionCreator(myAction);
 
@@ -193,7 +194,7 @@ expect(dispatch).toBeCalledWithActionCreator(anotherAction, "test2");
 
 ```npm install jest-mock-action-creators --save-dev```
 
-Add ```./node_modules/jest-mock-action-creators/babel``` to your plugins in .babelrc
+Add ```jest-mock-action-creators/babel``` to your plugins in .babelrc or .babelrc.js
 
 When using typescript and ```ts-jest```, enable babel processing in ```ts-jest``` (enabled by default) and tell it to use .babelrc:
 
