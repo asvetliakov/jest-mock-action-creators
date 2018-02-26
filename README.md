@@ -221,7 +221,7 @@ import { mockActionCreators, createDispatchMockImplementation } from "jest-mock-
 
 ## Want to mock only the specified action creators?
 
-It's possible with using [jest-easy-mock](https://github.com/asvetliakov/babel-plugin-jest-easy-mock), use this configuration:
+It's possible by using [jest-easy-mock](https://github.com/asvetliakov/babel-plugin-jest-easy-mock), use this configuration:
 
 ```js
         ["jest-easy-mock", {
