@@ -218,3 +218,54 @@ and finally import in your test:
 ```js
 import { mockActionCreators, createDispatchMockImplementation } from "jest-mock-action-creators";
 ```
+
+## Want to mock only the specified action creators?
+
+It's possible with using [jest-easy-mock](https://github.com/asvetliakov/babel-plugin-jest-easy-mock), use this configuration:
+
+```js
+        ["jest-easy-mock", {
+            requireActual: true,
+            identifiers: [
+                {
+                    name: "jest.mockObj",
+                    remove: true,
+                    type: "name",
+                },
+                {
+                    name: "jest.mockFn",
+                    remove: true,
+                    type: "mock",
+                },
+                {
+                    name: "replaceActionCreators",
+                    remove: false,
+                    type: "mock"
+                }
+            ]
+        }],
+        ["jest-mock-action-creators/babel", { mockIgnoreExpressions: ["mock", "doMock", "mockObj", "mockFn"] }],
+```
+
+and in the test:
+
+```js
+import { myAction, myAction2 } from "../actions";
+import { ActionModule } from "../../module";
+
+beforeEach(() => {
+    replaceActionCreators(
+        myAction,
+        ActionModule.action1,
+    );
+});
+
+it("test", () => {
+    myAction(); // mocked
+    myAction2(); // non-mocked
+
+    ActionModule.action1(); // mocked
+    ActionModule.action2(); // non-mocked
+});
+
+```
